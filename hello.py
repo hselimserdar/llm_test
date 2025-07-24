@@ -8,8 +8,8 @@ from dotenv import load_dotenv
 load_dotenv()
 # Load environment variables
 HOST = os.getenv('host', '127.0.0.1')
-PORT = os.getenv('port', 5000)
-DEBUG = os.getenv('debug', False)
+PORT = int(os.getenv('port', 5000))
+DEBUG = os.getenv('debug', 'False').lower() == 'true'
 
 app = Flask(__name__)
 
