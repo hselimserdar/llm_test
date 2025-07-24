@@ -1,0 +1,297 @@
+{% extends "base.html" %}
+
+{% block title %}Register - Gemini Chatbot{% endblock %}
+
+{% block styles %}
+{{ super() }}
+<style>
+    body {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .register-container {
+        background: rgba(255, 255, 255, 0.1);
+        padding: 2.5rem;
+        border-radius: 20px;
+        backdrop-filter: blur(15px);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+        max-width: 450px;
+        width: 100%;
+        text-align: center;
+    }
+
+    .register-header {
+        color: white;
+        margin-bottom: 2rem;
+    }
+
+    .register-header h1 {
+        font-size: 2rem;
+        margin-bottom: 0.5rem;
+        font-weight: 600;
+    }
+
+    .register-header p {
+        opacity: 0.9;
+        font-size: 1rem;
+    }
+
+    .form-group {
+        margin-bottom: 1.5rem;
+        text-align: left;
+    }
+
+    .form-group label {
+        display: block;
+        color: white;
+        margin-bottom: 0.5rem;
+        font-weight: 500;
+    }
+
+    .form-control {
+        width: 100%;
+        padding: 1rem;
+        border: 2px solid rgba(255, 255, 255, 0.3);
+        border-radius: 10px;
+        background: rgba(255, 255, 255, 0.1);
+        color: white;
+        font-size: 1rem;
+        transition: all 0.3s ease;
+    }
+
+    .form-control:focus {
+        outline: none;
+        border-color: rgba(255, 255, 255, 0.6);
+        background: rgba(255, 255, 255, 0.15);
+    }
+
+    .form-control::placeholder {
+        color: rgba(255, 255, 255, 0.6);
+    }
+
+    .register-btn {
+        width: 100%;
+        margin-bottom: 1.5rem;
+    }
+
+    .register-links {
+        color: white;
+        opacity: 0.9;
+    }
+
+    .register-links a {
+        color: white;
+        text-decoration: underline;
+        transition: opacity 0.3s ease;
+    }
+
+    .register-links a:hover {
+        opacity: 1;
+    }
+
+    .error-message {
+        background: rgba(255, 99, 99, 0.2);
+        color: #ffcccc;
+        padding: 1rem;
+        border-radius: 10px;
+        margin-bottom: 1.5rem;
+        border: 1px solid rgba(255, 99, 99, 0.3);
+    }
+
+    .success-message {
+        background: rgba(99, 255, 99, 0.2);
+        color: #ccffcc;
+        padding: 1rem;
+        border-radius: 10px;
+        margin-bottom: 1.5rem;
+        border: 1px solid rgba(99, 255, 99, 0.3);
+    }
+
+    .form-row {
+        display: flex;
+        gap: 1rem;
+    }
+
+    .form-row .form-group {
+        flex: 1;
+    }
+
+    .password-requirements {
+        font-size: 0.8rem;
+        color: rgba(255, 255, 255, 0.7);
+        margin-top: 0.5rem;
+        text-align: left;
+    }
+
+    .checkbox-group {
+        display: flex;
+        align-items: flex-start;
+        gap: 0.5rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .checkbox-group input[type="checkbox"] {
+        margin-top: 0.2rem;
+    }
+
+    .checkbox-group label {
+        font-size: 0.9rem;
+        line-height: 1.4;
+    }
+
+    @media (max-width: 768px) {
+        .register-container {
+            margin: 1rem;
+            padding: 2rem;
+        }
+        
+        .form-row {
+            flex-direction: column;
+            gap: 0;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="register-container">
+        <div class="register-header">
+            <h1>🚀 Join Us</h1>
+            <p>Create your account to start chatting</p>
+        </div>
+
+        {% if error %}
+        <div class="error-message">
+            {{ error }}
+        </div>
+        {% endif %}
+
+        {% if success %}
+        <div class="success-message">
+            {{ success }}
+        </div>
+        {% endif %}
+
+        <form method="POST" action="{{ url_for('register') }}" id="registerForm">
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="first_name">First Name</label>
+                    <input type="text" class="form-control" id="first_name" name="first_name" 
+                           placeholder="John" required>
+                </div>
+                <div class="form-group">
+                    <label for="last_name">Last Name</label>
+                    <input type="text" class="form-control" id="last_name" name="last_name" 
+                           placeholder="Doe" required>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="email">Email Address</label>
+                <input type="email" class="form-control" id="email" name="email" 
+                       placeholder="john.doe@example.com" required>
+            </div>
+
+            <div class="form-group">
+                <label for="username">Username</label>
+                <input type="text" class="form-control" id="username" name="username" 
+                       placeholder="johndoe123" required>
+            </div>
+
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input type="password" class="form-control" id="password" name="password" 
+                       placeholder="Enter a strong password" required>
+                <div class="password-requirements">
+                    Password must be at least 8 characters with uppercase, lowercase, and numbers
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="confirm_password">Confirm Password</label>
+                <input type="password" class="form-control" id="confirm_password" name="confirm_password" 
+                       placeholder="Confirm your password" required>
+            </div>
+
+            <div class="checkbox-group">
+                <input type="checkbox" id="terms" name="terms" required>
+                <label for="terms">
+                    I agree to the <a href="#" onclick="alert('Terms of Service coming soon!')">Terms of Service</a> 
+                    and <a href="#" onclick="alert('Privacy Policy coming soon!')">Privacy Policy</a>
+                </label>
+            </div>
+
+            <div class="checkbox-group">
+                <input type="checkbox" id="newsletter" name="newsletter">
+                <label for="newsletter">
+                    Send me updates about new features and improvements
+                </label>
+            </div>
+
+            <button type="submit" class="btn btn-primary register-btn">Create Account</button>
+        </form>
+
+        <div class="register-links">
+            <p>Already have an account? <a href="{{ url_for('login') }}">Sign in here</a></p>
+        </div>
+
+        <div style="margin-top: 2rem;">
+            <a href="{{ url_for('landing') }}" class="btn btn-secondary">Back to Home</a>
+        </div>
+    </div>
+</div>
+
+{% block scripts %}
+{{ super() }}
+<script>
+    // Initialize auto-save for register form
+    autoSaveForm('registerForm');
+    
+    // Form submission handling
+    document.getElementById('registerForm').addEventListener('submit', function(e) {
+        const submitBtn = this.querySelector('button[type="submit"]');
+        setLoading(submitBtn, true);
+        
+        // Clear saved form data on successful registration
+        setTimeout(() => {
+            clearSavedForm('registerForm');
+        }, 1000);
+    });
+    
+    // Email validation
+    document.getElementById('email').addEventListener('blur', function() {
+        if (this.value && !validateEmail(this.value)) {
+            showNotification('Please enter a valid email address', 'error');
+            this.focus();
+        }
+    });
+
+    // Password confirmation validation
+    document.getElementById('confirm_password').addEventListener('input', function() {
+        const password = document.getElementById('password').value;
+        const confirmPassword = this.value;
+        
+        if (password !== confirmPassword) {
+            this.setCustomValidity('Passwords do not match');
+        } else {
+            this.setCustomValidity('');
+        }
+    });
+
+    // Password strength validation
+    document.getElementById('password').addEventListener('input', function() {
+        const password = this.value;
+        
+        if (password && !validatePassword(password)) {
+            this.setCustomValidity('Password must be at least 8 characters with uppercase, lowercase, and numbers');
+        } else {
+            this.setCustomValidity('');
+        }
+    });
+</script>
+{% endblock %}
+{% endblock %}

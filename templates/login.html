@@ -1,0 +1,187 @@
+{% extends "base.html" %}
+
+{% block title %}Login - Gemini Chatbot{% endblock %}
+
+{% block styles %}
+{{ super() }}
+<style>
+    body {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .login-container {
+        background: rgba(255, 255, 255, 0.1);
+        padding: 2.5rem;
+        border-radius: 20px;
+        backdrop-filter: blur(15px);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+        max-width: 400px;
+        width: 100%;
+        text-align: center;
+    }
+
+    .login-header {
+        color: white;
+        margin-bottom: 2rem;
+    }
+
+    .login-header h1 {
+        font-size: 2rem;
+        margin-bottom: 0.5rem;
+        font-weight: 600;
+    }
+
+    .login-header p {
+        opacity: 0.9;
+        font-size: 1rem;
+    }
+
+    .form-group {
+        margin-bottom: 1.5rem;
+        text-align: left;
+    }
+
+    .form-group label {
+        display: block;
+        color: white;
+        margin-bottom: 0.5rem;
+        font-weight: 500;
+    }
+
+    .form-control {
+        width: 100%;
+        padding: 1rem;
+        border: 2px solid rgba(255, 255, 255, 0.3);
+        border-radius: 10px;
+        background: rgba(255, 255, 255, 0.1);
+        color: white;
+        font-size: 1rem;
+        transition: all 0.3s ease;
+    }
+
+    .form-control:focus {
+        outline: none;
+        border-color: rgba(255, 255, 255, 0.6);
+        background: rgba(255, 255, 255, 0.15);
+    }
+
+    .form-control::placeholder {
+        color: rgba(255, 255, 255, 0.6);
+    }
+
+    .login-btn {
+        width: 100%;
+        margin-bottom: 1.5rem;
+    }
+
+    .login-links {
+        color: white;
+        opacity: 0.9;
+    }
+
+    .login-links a {
+        color: white;
+        text-decoration: underline;
+        transition: opacity 0.3s ease;
+    }
+
+    .login-links a:hover {
+        opacity: 1;
+    }
+
+    .error-message {
+        background: rgba(255, 99, 99, 0.2);
+        color: #ffcccc;
+        padding: 1rem;
+        border-radius: 10px;
+        margin-bottom: 1.5rem;
+        border: 1px solid rgba(255, 99, 99, 0.3);
+    }
+
+    .forgot-password {
+        margin-top: 1rem;
+        font-size: 0.9rem;
+    }
+
+    @media (max-width: 768px) {
+        .login-container {
+            margin: 1rem;
+            padding: 2rem;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="login-container">
+        <div class="login-header">
+            <h1>🤖 Welcome Back</h1>
+            <p>Sign in to continue chatting</p>
+        </div>
+
+        {% if error %}
+        <div class="error-message">
+            {{ error }}
+        </div>
+        {% endif %}
+
+        <form method="POST" action="{{ url_for('login') }}" id="loginForm">
+            <div class="form-group">
+                <label for="email">Email Address</label>
+                <input type="email" class="form-control" id="email" name="email" 
+                       placeholder="Enter your email" required>
+            </div>
+
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input type="password" class="form-control" id="password" name="password" 
+                       placeholder="Enter your password" required>
+            </div>
+
+            <button type="submit" class="btn btn-primary login-btn">Sign In</button>
+        </form>
+
+        <div class="login-links">
+            <p>Don't have an account? <a href="{{ url_for('register') }}">Sign up here</a></p>
+            <p class="forgot-password">
+                <a href="#" onclick="alert('Password reset feature coming soon!')">Forgot your password?</a>
+            </p>
+        </div>
+
+        <div style="margin-top: 2rem;">
+            <a href="{{ url_for('landing') }}" class="btn btn-secondary">Back to Home</a>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+{{ super() }}
+<script>
+    // Initialize auto-save for login form
+    autoSaveForm('loginForm');
+    
+    // Form submission handling
+    document.getElementById('loginForm').addEventListener('submit', function(e) {
+        const submitBtn = this.querySelector('button[type="submit"]');
+        setLoading(submitBtn, true);
+        
+        // Clear saved form data on successful login
+        setTimeout(() => {
+            clearSavedForm('loginForm');
+        }, 1000);
+    });
+    
+    // Email validation
+    document.getElementById('email').addEventListener('blur', function() {
+        if (this.value && !validateEmail(this.value)) {
+            showNotification('Please enter a valid email address', 'error');
+            this.focus();
+        }
+    });
+</script>
+{% endblock %}
