@@ -14,8 +14,17 @@ DEBUG = os.getenv('debug', 'False').lower() == 'true'
 app = Flask(__name__)
 
 @app.route("/")
-def hello_world():
-    return "<p>Hello, World!</p>"
+def landing():
+    return "<p>Welcome to the Gemini chatbot!</p>"
+@app.route("/login")
+def login():
+    return "<p>Please log in to continue.</p>"
+@app.route("/register")
+def register():
+    return "<p>Please register to continue.</p>"
+@app.route("/chatbot")
+def chatbot():
+    return "<p>You can start chat by typing your message!</p>"
 
 if __name__ == '__main__':
     app.run(debug=DEBUG, port=PORT, host=HOST)
