@@ -4,6 +4,8 @@
 from flask import Flask, render_template
 import os
 from dotenv import load_dotenv
+import mysql.connector # Importing the MySQL connector for database operations
+from impl.login import *  # Importing the login function from the login module
 
 load_dotenv()
 # Load environment variables
@@ -19,7 +21,7 @@ def landing():
 
 @app.route("/login")
 def login():
-    return render_template('login.html')
+    return render_login()
 
 @app.route("/register")
 def register():
@@ -35,3 +37,4 @@ def chatbot_session(SessionId):
 
 if __name__ == '__main__':
     app.run(debug=DEBUG, port=PORT, host=HOST)
+    print("test")
