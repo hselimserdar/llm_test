@@ -177,17 +177,10 @@
         {% endif %}
 
         <form method="POST" action="{{ url_for('register') }}" id="registerForm">
-            <div class="form-row">
-                <div class="form-group">
-                    <label for="first_name">First Name</label>
-                    <input type="text" class="form-control" id="first_name" name="first_name" 
-                           placeholder="John" required>
-                </div>
-                <div class="form-group">
-                    <label for="last_name">Last Name</label>
-                    <input type="text" class="form-control" id="last_name" name="last_name" 
-                           placeholder="Doe" required>
-                </div>
+            <div class="form-group">
+                <label for="username">Username</label>
+                <input type="text" class="form-control" id="username" name="username" 
+                       placeholder="Choose a username" required>
             </div>
 
             <div class="form-group">
@@ -197,39 +190,15 @@
             </div>
 
             <div class="form-group">
-                <label for="username">Username</label>
-                <input type="text" class="form-control" id="username" name="username" 
-                       placeholder="johndoe123" required>
-            </div>
-
-            <div class="form-group">
                 <label for="password">Password</label>
                 <input type="password" class="form-control" id="password" name="password" 
                        placeholder="Enter a strong password" required>
-                <div class="password-requirements">
-                    Password must be at least 8 characters with uppercase, lowercase, and numbers
-                </div>
             </div>
 
             <div class="form-group">
-                <label for="confirm_password">Confirm Password</label>
-                <input type="password" class="form-control" id="confirm_password" name="confirm_password" 
+                <label for="repeat_password">Confirm Password</label>
+                <input type="password" class="form-control" id="repeat_password" name="repeat_password" 
                        placeholder="Confirm your password" required>
-            </div>
-
-            <div class="checkbox-group">
-                <input type="checkbox" id="terms" name="terms" required>
-                <label for="terms">
-                    I agree to the <a href="#" onclick="alert('Terms of Service coming soon!')">Terms of Service</a> 
-                    and <a href="#" onclick="alert('Privacy Policy coming soon!')">Privacy Policy</a>
-                </label>
-            </div>
-
-            <div class="checkbox-group">
-                <input type="checkbox" id="newsletter" name="newsletter">
-                <label for="newsletter">
-                    Send me updates about new features and improvements
-                </label>
             </div>
 
             <button type="submit" class="btn btn-primary register-btn">Create Account</button>
@@ -253,13 +222,75 @@
     
     // Form submission handling
     document.getElementById('registerForm').addEventListener('submit', function(e) {
+        e.preventDefault(); // Always prevent default to handle manually
+        
         const submitBtn = this.querySelector('button[type="submit"]');
+        
+        // Get form values
+        const username = document.getElementById('username').value;
+        const email = document.getElementById('email').value;
+        const password = document.getElementById('password').value;
+        const repeatPassword = document.getElementById('repeat_password').value;
+        
+        // Validate passwords match before submitting
+        if (password !== repeatPassword) {
+            showNotification('Passwords do not match!', 'error');
+            document.getElementById('repeat_password').focus();
+            return;
+        }
+        
+        // Validate password strength
+        if (!validatePassword(password)) {
+            showNotification('Password must be at least 8 characters with uppercase, lowercase, and numbers', 'error');
+            document.getElementById('password').focus();
+            return;
+        }
+        
+        // Validate email
+        if (!validateEmail(email)) {
+            showNotification('Please enter a valid email address', 'error');
+            document.getElementById('email').focus();
+            return;
+        }
+        
         setLoading(submitBtn, true);
         
-        // Clear saved form data on successful registration
-        setTimeout(() => {
-            clearSavedForm('registerForm');
-        }, 1000);
+        // Create form data
+        const formData = new FormData();
+        formData.append('username', username);
+        formData.append('email', email);
+        formData.append('password', password);
+        formData.append('repeat_password', repeatPassword);
+        
+        // Send AJAX request to validate registration
+        fetch('{{ url_for("register") }}', {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                // Show success message
+                showNotification('Registration successful! Welcome to Gemini Chatbot! Redirecting...', 'success', 3000);
+                
+                // Clear saved form data
+                clearSavedForm('registerForm');
+                
+                // Redirect to chatbot after showing success message
+                setTimeout(() => {
+                    window.location.href = "{{ url_for('chatbot') }}";
+                }, 3000);
+            } else {
+                // Show error message from server
+                showNotification(data.message || 'Registration failed. Please check your information.', 'error');
+                setLoading(submitBtn, false);
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            showNotification('Registration failed. Please try again.', 'error');
+            setLoading(submitBtn, false);
+        });
     });
     
     // Email validation
@@ -271,7 +302,7 @@
     });
 
     // Password confirmation validation
-    document.getElementById('confirm_password').addEventListener('input', function() {
+    document.getElementById('repeat_password').addEventListener('input', function() {
         const password = document.getElementById('password').value;
         const confirmPassword = this.value;
         
@@ -292,6 +323,18 @@
             this.setCustomValidity('');
         }
     });
+    
+    // Username validation
+    document.getElementById('username').addEventListener('input', function() {
+        const username = this.value;
+        
+        if (username.length < 3) {
+            this.setCustomValidity('Username must be at least 3 characters long');
+        } else if (!/^[a-zA-Z0-9_]+$/.test(username)) {
+            this.setCustomValidity('Username can only contain letters, numbers, and underscores');
+        } else {
+            this.setCustomValidity('');
+        }
+    });
 </script>
-{% endblock %}
 {% endblock %}

@@ -167,13 +167,60 @@
     
     // Form submission handling
     document.getElementById('loginForm').addEventListener('submit', function(e) {
+        e.preventDefault(); // Always prevent default to handle manually
+        
         const submitBtn = this.querySelector('button[type="submit"]');
+        const email = document.getElementById('email').value;
+        const password = document.getElementById('password').value;
+        
+        // Basic validation before submitting
+        if (!email || !password) {
+            showNotification('Please fill in all fields', 'error');
+            return;
+        }
+        
+        if (!validateEmail(email)) {
+            showNotification('Please enter a valid email address', 'error');
+            document.getElementById('email').focus();
+            return;
+        }
+        
         setLoading(submitBtn, true);
         
-        // Clear saved form data on successful login
-        setTimeout(() => {
-            clearSavedForm('loginForm');
-        }, 1000);
+        // Create form data
+        const formData = new FormData();
+        formData.append('email', email);
+        formData.append('password', password);
+        
+        // Send AJAX request to validate login
+        fetch('{{ url_for("login") }}', {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                // Show success message
+                showNotification('Login successful! Welcome back! Redirecting to chatbot...', 'success', 2500);
+                
+                // Clear saved form data
+                clearSavedForm('loginForm');
+                
+                // Redirect to chatbot after showing success message
+                setTimeout(() => {
+                    window.location.href = "{{ url_for('chatbot') }}";
+                }, 2500);
+            } else {
+                // Show error message from server
+                showNotification(data.message || 'Invalid email or password', 'error');
+                setLoading(submitBtn, false);
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            showNotification('Login failed. Please try again.', 'error');
+            setLoading(submitBtn, false);
+        });
     });
     
     // Email validation
@@ -181,6 +228,17 @@
         if (this.value && !validateEmail(this.value)) {
             showNotification('Please enter a valid email address', 'error');
             this.focus();
+        }
+    });
+    
+    // Password field validation
+    document.getElementById('password').addEventListener('input', function() {
+        const password = this.value;
+        
+        if (password.length > 0 && password.length < 6) {
+            this.setCustomValidity('Password must be at least 6 characters');
+        } else {
+            this.setCustomValidity('');
         }
     });
 </script>
