@@ -48,7 +48,7 @@ def login():
 
 @app.route("/api/login")
 def login_api():
-    return {"message": "Login successful"}
+    return request.json
 
 @app.route("/register", methods=['GET', 'POST'])
 def register():
